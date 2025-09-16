@@ -9,6 +9,8 @@ export function useWebRTC(roomId: string) {
   const me = useSessionStore(s => s.me)
   const [streams, setStreams] = useState<RemoteStream[]>([])
   const [isStarted, setIsStarted] = useState(false)
+  const [isCamOn, setIsCamOn] = useState(true)
+  const [isMicOn, setIsMicOn] = useState(true)
   const localStreamRef = useRef<MediaStream | null>(null)
   const peersRef = useRef<Record<string, Peer.Instance>>({})
 
@@ -23,6 +25,8 @@ export function useWebRTC(roomId: string) {
     if (isStarted) return
     const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
     localStreamRef.current = stream
+    setIsCamOn(true)
+    setIsMicOn(true)
     setStreams((s) => [{ peerId: 'me', stream, label: 'Me' }, ...s.filter(x => x.peerId !== 'me')])
     setIsStarted(true)
     signalPresence()
@@ -50,7 +54,17 @@ export function useWebRTC(roomId: string) {
 
   function createPeer(peerId: string) {
     const initiator = peerId.localeCompare(useSessionStore.getState().me?.id ?? 'anon') > 0
-    const p = new Peer({ initiator, trickle: true, stream: localStreamRef.current ?? undefined })
+    const p = new Peer({
+      initiator,
+      trickle: true,
+      stream: localStreamRef.current ?? undefined,
+      config: {
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:global.stun.twilio.com:3478?transport=udp' },
+        ],
+      },
+    })
     peersRef.current[peerId] = p
     const gun = getGunForRoom(roomId)
     const sig = gun.get(roomId).get('signals')
@@ -86,7 +100,27 @@ export function useWebRTC(roomId: string) {
     })
   }
 
-  return { streams, start, stop, isStarted }
+  function toggleCam() {
+    const stream = localStreamRef.current
+    if (!stream) return
+    const track = stream.getVideoTracks()[0]
+    if (!track) return
+    const next = !track.enabled
+    track.enabled = next
+    setIsCamOn(next)
+  }
+
+  function toggleMic() {
+    const stream = localStreamRef.current
+    if (!stream) return
+    const track = stream.getAudioTracks()[0]
+    if (!track) return
+    const next = !track.enabled
+    track.enabled = next
+    setIsMicOn(next)
+  }
+
+  return { streams, start, stop, isStarted, isCamOn, isMicOn, toggleCam, toggleMic }
 }
 
 

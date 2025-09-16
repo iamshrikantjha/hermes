@@ -3,12 +3,16 @@ import 'gun/sea'
 import 'gun/axe'
 import { useEffect, useState } from 'react'
 
-const gunByRoom: Record<string, Gun> = {}
+const gunByRoom: Record<string, any> = {}
+const PUBLIC_PEERS = [
+  // Community relays; ephemeral session data only (we disabled local storage)
+  'https://gun-manhattan.herokuapp.com/gun',
+]
 
 export function getGunForRoom(roomId: string) {
   if (!gunByRoom[roomId]) {
-    // Use local peer only (no storage). You can add free community relays if desired.
-    gunByRoom[roomId] = Gun({ localStorage: false, radisk: false, peers: [] })
+    // Use free community relays for connectivity; no local storage
+    gunByRoom[roomId] = Gun({ localStorage: false, radisk: false, peers: PUBLIC_PEERS })
   }
   return gunByRoom[roomId]
 }
@@ -18,7 +22,7 @@ export function useGunDoc<T>({ roomId, key, defaultValue }: { roomId: string; ke
   useEffect(() => {
     const gun = getGunForRoom(roomId)
     const node = gun.get(roomId).get(key)
-    const handler = node.on((data: T) => {
+    node.on((data: T) => {
       if (data !== undefined && data !== null) setDocState(data)
     })
     return () => { node.off() }

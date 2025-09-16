@@ -4,6 +4,8 @@ import { Editor } from '../components/Editor'
 import { Chat } from '../components/Chat'
 import { VideoGrid } from '../components/VideoGrid'
 import { useSessionStore } from '../state/session'
+import { ThemeSwitcher } from '../components/ThemeSwitcher'
+import { getAvatarUrl } from '../utils/avatars'
 
 export const Route = createFileRoute('/room/$roomId')({
   component: RoomPage,
@@ -14,6 +16,7 @@ function RoomPage() {
   const router = useRouter()
   const [displayName, setDisplayName] = useState("")
   const [joining, setJoining] = useState(false)
+  const [isNameModalOpen, setIsNameModalOpen] = useState(false)
   const joined = useSessionStore(s => s.joined)
   const setJoined = useSessionStore(s => s.setJoined)
   const setRoom = useSessionStore(s => s.setRoom)
@@ -38,32 +41,63 @@ function RoomPage() {
   const content = useMemo(() => (
     <div className="flex h-dvh w-full flex-col">
       <div className="navbar bg-base-100 border-b">
-        <div className="flex-1">
+        <div className="navbar-start">
           <a className="btn btn-ghost text-xl">Hermes</a>
         </div>
-        <div className="flex-none gap-2">
-          <div className="form-control hidden md:block">
-            <input type="text" readOnly className="input input-bordered w-80" value={window.location.href} />
+        <div className="navbar-center hidden md:flex">
+          <div className="join w-[32rem]">
+            <input type="text" readOnly value={window.location.href} className="input input-bordered join-item w-full" />
+            <button className="btn btn-primary join-item" onClick={copyLink}>Copy</button>
           </div>
-          <button className="btn btn-primary" onClick={copyLink}>Copy Link</button>
-          <select className="select select-bordered" value={useSessionStore.getState().language} onChange={(e) => useSessionStore.getState().setLanguage(e.target.value)}>
-            <option value="typescript">TypeScript</option>
-            <option value="javascript">JavaScript</option>
-            <option value="python">Python</option>
-            <option value="cpp">C++</option>
-            <option value="java">Java</option>
-            <option value="go">Go</option>
-            <option value="rust">Rust</option>
-          </select>
-          <label className="swap swap-rotate">
-            <input type="checkbox" onChange={(e) => {
-              const newTheme = e.target.checked ? 'night' : 'light'
-              document.documentElement.setAttribute('data-theme', newTheme)
-              themeRef.current = newTheme
-            }} />
-            <svg className="swap-off fill-current w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0L7.05,18.4A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7,4.93,6.29A1,1,0,1,0,3.52,7.7L4.23,8.41A1,1,0,0,0,5.64,7ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2ZM18.36,17a1,1,0,0,0-1.41,1.41l.71.71a1,1,0,0,0,1.41-1.41ZM12,19a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,7.05a1,1,0,0,0,.71-.29l.71-.71a1,1,0,0,0-1.41-1.41l-.71.71a1,1,0,0,0,0,1.41A1,1,0,0,0,18.36,7.05Z"/></svg>
-            <svg className="swap-on fill-current w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.64,13a1,1,0,0,0-1.05-.14,8,8,0,0,1-10.45-10.5A1,1,0,0,0,9,1,10,10,0,1,0,22,14,1,1,0,0,0,21.64,13Z"/></svg>
-          </label>
+        </div>
+        <div className="navbar-end">
+          <div className="hidden md:flex items-center gap-2">
+            <select className="select select-bordered select-sm" value={useSessionStore.getState().language} onChange={(e) => useSessionStore.getState().setLanguage(e.target.value)}>
+              <option value="typescript">TypeScript</option>
+              <option value="javascript">JavaScript</option>
+              <option value="python">Python</option>
+              <option value="cpp">C++</option>
+              <option value="java">Java</option>
+              <option value="go">Go</option>
+              <option value="rust">Rust</option>
+            </select>
+            <button className="btn btn-ghost" onClick={()=>setIsNameModalOpen(true)}>
+              <div className="avatar">
+                <div className="w-8 rounded-full">
+                  <img src={getAvatarUrl(useSessionStore.getState().me?.name ?? 'Anonymous')} />
+                </div>
+              </div>
+              <span className="ml-2 max-w-[10rem] truncate">{useSessionStore.getState().me?.name ?? 'Anonymous'}</span>
+            </button>
+            <ThemeSwitcher />
+          </div>
+          <div className="md:hidden dropdown dropdown-end">
+            <div tabIndex={0} role="button" className="btn btn-ghost">Menu</div>
+            <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-56">
+              <li>
+                <button onClick={copyLink}>Copy Link</button>
+              </li>
+              <li>
+                <a onClick={()=>setIsNameModalOpen(true)}>Edit Name</a>
+              </li>
+              <li>
+                <div className="px-2 py-1">
+                  <select className="select select-bordered select-sm w-full" value={useSessionStore.getState().language} onChange={(e) => useSessionStore.getState().setLanguage(e.target.value)}>
+                    <option value="typescript">TypeScript</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="python">Python</option>
+                    <option value="cpp">C++</option>
+                    <option value="java">Java</option>
+                    <option value="go">Go</option>
+                    <option value="rust">Rust</option>
+                  </select>
+                </div>
+              </li>
+              <li>
+                <div className="px-2 py-1"><ThemeSwitcher /></div>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
       <div className="grid grid-rows-2 md:grid-rows-1 md:grid-cols-3 gap-2 p-2 h-[calc(100dvh-4rem)]">
@@ -104,7 +138,38 @@ function RoomPage() {
     )
   }
 
-  return content
+  return (
+    <>
+      {content}
+      <NameEditModal open={isNameModalOpen} onClose={()=>setIsNameModalOpen(false)} />
+    </>
+  )
+}
+
+function NameEditModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const me = useSessionStore(s => s.me)
+  const [name, setName] = useState(me?.name ?? '')
+  useEffect(() => { setName(me?.name ?? '') }, [me?.name])
+  const save = () => {
+    if (!name.trim()) return
+    useSessionStore.getState().setMe({ id: useSessionStore.getState().me?.id ?? crypto.randomUUID(), name: name.trim() })
+    onClose()
+  }
+  return (
+    <dialog className={`modal ${open ? 'modal-open' : ''}`}>
+      <div className="modal-box">
+        <h3 className="font-bold text-lg mb-3">Edit display name</h3>
+        <input className="input input-bordered w-full" value={name} onChange={(e)=>setName(e.target.value)} />
+        <div className="modal-action">
+          <button className="btn" onClick={onClose}>Cancel</button>
+          <button className="btn btn-primary" onClick={save}>Save</button>
+        </div>
+      </div>
+      <form method="dialog" className="modal-backdrop" onClick={onClose}>
+        <button>close</button>
+      </form>
+    </dialog>
+  )
 }
 
 
