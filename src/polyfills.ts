@@ -1,4 +1,6 @@
 // Minimal browser polyfills for libs expecting Node globals
+export {}; // Add this at the top or bottom
+
 declare global {
   interface Window { global?: any; process?: any }
 }

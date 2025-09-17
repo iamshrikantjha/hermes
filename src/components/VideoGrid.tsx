@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
-import { useSessionStore } from '../state/session'
+import { useEffect, useRef } from 'react'
+// import { useSessionStore } from '../state/session'
 import { useWebRTC } from '../realtime/webrtc'
 
 type Props = { roomId: string }

@@ -1,5 +1,5 @@
-import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { createFileRoute } from '@tanstack/react-router'
+import { useEffect, useMemo, useState } from 'react'
 import { Editor } from '../components/Editor'
 import { Chat } from '../components/Chat'
 import { VideoGrid } from '../components/VideoGrid'
@@ -13,14 +13,14 @@ export const Route = createFileRoute('/room/$roomId')({
 
 function RoomPage() {
   const { roomId } = Route.useParams()
-  const router = useRouter()
+  // const router = useRouter()
   const [displayName, setDisplayName] = useState("")
   const [joining, setJoining] = useState(false)
   const [isNameModalOpen, setIsNameModalOpen] = useState(false)
   const joined = useSessionStore(s => s.joined)
   const setJoined = useSessionStore(s => s.setJoined)
   const setRoom = useSessionStore(s => s.setRoom)
-  const themeRef = useRef<string | null>(null)
+  // const themeRef = useRef<string | null>(null)
 
   useEffect(() => {
     setRoom(roomId)
