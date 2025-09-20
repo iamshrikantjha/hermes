@@ -2,7 +2,7 @@ export function ThemeSwitcher() {
   return (
     <label className="swap swap-rotate">
       <input type="checkbox" onChange={(e) => {
-        const newTheme = e.target.checked ? 'night' : 'retro'
+        const newTheme = e.target.checked ? 'night' : 'corporate'
         document.documentElement.setAttribute('data-theme', newTheme)
       }} />
       

@@ -2,6 +2,7 @@ import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useState } from 'react'
 import { ThemeSwitcher } from '../components/ThemeSwitcher'
 import { useSessionStore } from '../state/session'
+import Footer from '@/components/Footer'
 
 export const Route = createFileRoute('/')({
   component: App,
@@ -231,6 +232,8 @@ function App() {
           animation-delay: 4s;
         }
       `}</style>
+
+      <Footer />
     </div>
   )
 }
