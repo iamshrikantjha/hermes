@@ -5,8 +5,11 @@ import { useEffect, useState } from 'react'
 
 const gunByRoom: Record<string, any> = {}
 const PUBLIC_PEERS = [
-  // Community relays; ephemeral session data only (we disabled local storage)
   'https://gun-manhattan.herokuapp.com/gun',
+  'https://gun-us.herokuapp.com/gun',
+  'https://gun-eu.herokuapp.com/gun',
+  'https://herokuapp.com/gun',
+  'https://peer.wallie.io/gun',
 ]
 
 export function getGunForRoom(roomId: string) {

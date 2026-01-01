@@ -1,20 +1,24 @@
+import { Sun, Moon } from 'lucide-react'
+
 export function ThemeSwitcher() {
   return (
-    <label className="swap swap-rotate">
+    <label className="swap swap-rotate btn btn-ghost btn-circle">
       <input type="checkbox" onChange={(e) => {
-        const newTheme = e.target.checked ? 'night' : 'corporate'
-        document.documentElement.setAttribute('data-theme', newTheme)
+        const theme = e.target.checked ? 'dark' : 'light'
+        document.documentElement.setAttribute('data-theme', theme)
+        // Ensure class is also toggled for Tailwind dark mode if configured by class
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark')
+        } else {
+          document.documentElement.classList.remove('dark')
+        }
       }} />
-      
+
       {/* Sun icon - shows when unchecked (light theme) */}
-      <svg className="swap-off fill-current w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-        <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z" />
-      </svg>
-      
+      <Sun className="swap-off w-5 h-5" />
+
       {/* Moon icon - shows when checked (dark theme) */}
-      <svg className="swap-on fill-current w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-        <path d="M21.64,13a1,1,0,0,0-1.05-.14,8,8,0,0,1-10.45-10.5A1,1,0,0,0,9,1,10,10,0,1,0,22,14,1,1,0,0,0,21.64,13Z" />
-      </svg>
+      <Moon className="swap-on w-5 h-5" />
     </label>
   )
 }
